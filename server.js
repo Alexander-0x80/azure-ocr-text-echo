@@ -44,7 +44,6 @@ function imageToText(url) {
             } else reject(err);
         });
     });
-
 }
 
 app.post('/image-to-text', jsonParser, validateRequest, (req, res) => {
@@ -54,14 +53,13 @@ app.post('/image-to-text', jsonParser, validateRequest, (req, res) => {
 });
 
 app.post('/image-to-id', jsonParser, validateRequest, (req, res) => {
-    imageToText(req.body.url)
+    return imageToText(req.body.url)
         .then((text) => {
             const matched = text.match(/\d{3}-?\d{7}-?\d{7}/g);
             return (matched)
                 ? res.send(matched[0])
                 : res.sendStatus(404);
-        })
-        .catch((err) => res.sendStatus(400));
+        }).catch((err) => res.sendStatus(400));
 })
 
 app.listen(process.env.PORT || 8080);
