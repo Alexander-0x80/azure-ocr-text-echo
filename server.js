@@ -11,7 +11,7 @@ const visionApiUrl = 'https://' + process.env.VISION_API_HOST + '/vision/v1.0';
 const visionApiKey = process.env.VISION_API_KEY;
 
 function validateRequest(req, res, next) {
-    if (!req.body && req.body.url) return res.sendStatus(400);
+    if (!req.body.url) return res.sendStatus(400);
     if (!req.body.secret) return res.sendStatus(401);
 
     next();
