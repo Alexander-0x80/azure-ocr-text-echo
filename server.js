@@ -17,6 +17,19 @@ function validateRequest(req, res, next) {
     next();
 }
 
+function asText(responseBody) {
+    var text = [];
+    responseBody.regions.forEach((region) => {
+        if (region.lines) region.lines.forEach((line) => {
+            if (line.words) line.words.forEach((word) => {
+                text.push(word.text);
+            });
+        });
+    });
+
+    return text.join(" ");
+}
+
 function imageToText(url) {
     return new Promise((resolve, reject) => {
         const requestOptions = {
@@ -28,20 +41,9 @@ function imageToText(url) {
         };
 
         return request(requestOptions, (err, httpResponse, body) => {
-            if (!err && httpResponse.statusCode == 200) {
-                let text = [];
-                httpResponse.body.regions.forEach((region) => {
-                    if (region.lines)
-                    region.lines.forEach((line) => {
-                        if (line.words)
-                        line.words.forEach((word) => {
-                            text.push(word.text);
-                        });
-                    });
-                });
-
-                resolve(text.join(" "));
-            } else reject(err);
+            return (!err && httpResponse.statusCode == 200)
+                ? resolve(asText(httpResponse.body))
+                : reject(err);
         });
     });
 }
