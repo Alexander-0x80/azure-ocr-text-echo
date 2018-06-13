@@ -17,17 +17,15 @@ function validateRequest(req, res, next) {
     next();
 }
 
-function asText(responseBody) {
+function toTextArray(responseBody) {
     var text = [];
     responseBody.regions.forEach((region) => {
         if (region.lines) region.lines.forEach((line) => {
-            if (line.words) line.words.forEach((word) => {
-                text.push(word.text);
-            });
+            if (line.words) line.words.forEach(word => text.push(word.text));
         });
     });
 
-    return text.join("");
+    return text;
 }
 
 function imageToText(url) {
@@ -42,7 +40,7 @@ function imageToText(url) {
 
         return request(requestOptions, (err, httpResponse, body) => {
             return (!err && httpResponse.statusCode == 200)
-                ? resolve(asText(httpResponse.body))
+                ? resolve(toTextArray(httpResponse.body))
                 : reject(err);
         });
     });
@@ -50,14 +48,14 @@ function imageToText(url) {
 
 app.post('/image-to-text', jsonParser, validateRequest, (req, res) => {
     return imageToText(req.body.url)
-        .then((text) => res.send(text))
+        .then((text) => res.send(text.join(" ")))
         .catch((err) => res.sendStatus(404));
 });
 
 app.post('/image-to-id', jsonParser, validateRequest, (req, res) => {
     return imageToText(req.body.url)
         .then((text) => {
-            const matched = text.match(/\d{3}-?\d{7}-?\d{7}/g);
+            const matched = text.join("").match(/\d{3}-?\d{7}-?\d{7}/g);
             return (matched)
                 ? res.send(matched[0])
                 : res.sendStatus(404);
