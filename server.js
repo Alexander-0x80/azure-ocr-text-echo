@@ -7,7 +7,7 @@ const request = require('request');
 const app = express();
 const jsonParser = bodyParser.json();
 
-const visionApiUrl = 'https://' + process.env.VISION_API_HOST + '/vision/v1.0';
+const visionApiUrl = 'https://' + process.env.VISION_API_HOST + '/vision/v2.0';
 const visionApiKey = process.env.VISION_API_KEY;
 
 function validateRequest(req, res, next) {
@@ -27,7 +27,7 @@ function asText(responseBody) {
         });
     });
 
-    return text.join(" ");
+    return text.join("");
 }
 
 function imageToText(url) {
